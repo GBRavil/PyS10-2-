@@ -1,0 +1,95 @@
+Исправление № 1
+Было:
+count = message.text
+    if len(duel) == 0:
+        if new_game:
+            if message.text.isdigit() and 0 < int(message.text) < 29:
+                total -= int(message.text)
+                if total <= 0:
+                    await message.answer(f'Ура! {name} ты победил!')
+                    new_game = False
+                else:
+                    await message.answer(f'{name} взял {message.text} конфет. '
+                                         f'На столе осталось {total}')
+                    await bot_turn(message)
+            else:
+                await message.answer(f'{name}, надо указать ЧИСЛО от 1 до 28!')
+    else:
+        if current == int(message.from_user.id):
+            name = message.from_user.first_name
+            count = message.text
+            if new_game:
+                if message.text.isdigit() and 0 < int(message.text) < 29:
+                    total -= int(message.text)
+                    if total <= 0:
+                        await message.answer(f'Ура! {name} ты победил!')
+                        await dp.bot.send_message(enemy_id(), 'К сожалению ты проиграл! Твой оппонент оказался умнее! :)')
+                        new_game = False
+                    else:
+                        await message.answer(f'{name} взял {message.text} конфет. '
+                                             f'На столе осталось {total}')
+                        await dp.bot.send_message(enemy_id(), f'Теперь твой ход, бери конфеты! На столе осталось ровно {total}')
+                        switch_players()
+                else:
+                    await message.answer(f'{name}, надо указать ЧИСЛО от 1 до 28!')
+
+Стало:
+    count = message.text
+    if len(duel) == 0:
+        if new_game:
+            if count.isdigit() and 0 < int(count) < 29:
+                total -= int(count)
+                if total <= 0:
+                    await message.answer(f'Ура! {name} ты победил!')
+                    new_game = False
+                else:
+                    await message.answer(f'{name} взял {count} конфет. '
+                                         f'На столе осталось {total}')
+                    await bot_turn(message)
+            else:
+                await message.answer(f'{name}, надо указать ЧИСЛО от 1 до 28!')
+    else:
+        if current == int(message.from_user.id):
+            name = message.from_user.first_name
+            count = message.text
+            if new_game:
+                if count.isdigit() and 0 < int(count) < 29:
+                    total -= int(count)
+                    if total <= 0:
+                        await message.answer(f'Ура! {name} ты победил!')
+                        await dp.bot.send_message(enemy_id(), 'К сожалению ты проиграл! Твой оппонент оказался умнее! :)')
+                        new_game = False
+                    else:
+                        await message.answer(f'{name} взял {count} конфет. '
+                                             f'На столе осталось {total}')
+                        await dp.bot.send_message(enemy_id(), f'Теперь твой ход, бери конфеты! На столе осталось ровно {total}')
+                        switch_players()
+                else:
+                    await message.answer(f'{name}, надо указать ЧИСЛО от 1 до 28!')
+
+Исправление № 2
+Было:
+@dp.message_handler(commands=['start', 'старт'])
+async def mes_start(message: types.Message):
+    name = message.from_user.first_name
+    await message.answer(f'{name}, привет! Сегодня сыграем с тобой в конфеты! Для начала игры введи команду /new_game. '
+                         f'Для настройки конфет введи команду /set и укажи количество конфет\n'
+                         f'Или /duel и id оппонента, для игры вдвоем')
+    print(message.from_user.id)
+
+Стало:
+@dp.message_handler(commands=['start', 'старт'])
+async def mes_start(message: types.Message):
+    name = message.from_user.first_name
+    await message.answer(f'{name}, привет! Сегодня сыграем с тобой в конфеты! Для начала игры введи команду /new_game. '
+                         f'Для настройки конфет введи команду /set и укажи количество конфет\n'
+                         f'Или /duel и id оппонента, для игры вдвоем')
+    print(message.from_user.id)
+    player1_id = 0
+    player2_id = 0
+    if player1_id == 0:
+        player1_id = int(message.from_user.id)
+    else:
+        player2_id = int(message.from_user.id)
+        await dp.bot.send_message(player1_id, f'Оппонент с id {player2_id} готов к дуэли')
+        await dp.bot.send_message(player2_id, f'Вызов брошен, ожидаем согласие на дуэль')
